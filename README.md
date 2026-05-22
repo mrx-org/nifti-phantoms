@@ -1,22 +1,32 @@
-# NIfTI Phantom file format
+# NIfTI Phantoms
 
-NIfTI phantoms is a universal, flexible and implementation-agnostic format for storing MRI simulation data.
-It is based on two widely used file formats:
-- NIfTI for volumetric data, easy to view, modify, store in many applications and programming languages
-- JSON for phantom definitions - human readable, basically supported everywhere
+A universal, implementation-agnostic format for storing MRI simulation phantoms.
+A phantom is one **JSON** file defining tissues and their MR properties (T1, T2,
+…), referencing **NIfTI** files for per-voxel data — both widely supported and
+easy to view, edit and version. The goal: vary experiments by editing JSON, not
+code, so phantom data is exchangeable and reproducible.
 
-The NIfTI phantom format specifies how to store the data, how to structure the JSON file and how to reference this data.
-Its goal is to be easy enough to use that configuring phantoms for different experiments is easier done by creating variations of JSON configurations than to modify from code - making experiment data exchangable and reproducible.
+## Specification
 
-This repository contains the [specification](SPEC.md), a [JSON schema](nifti-phantom-v1.schema.json) of the JSON files and a reference implementation of phantom loading in Python.
+- [SPEC.md](SPEC.md) — overview and folder layout.
+- [JSON.md](JSON.md) — the phantom JSON: structure, units, system, tissues.
+- [NIFTI.md](NIFTI.md) — the NIfTI files: format and coordinate conventions.
+- [nifti-phantom-v1.schema.json](nifti-phantom-v1.schema.json) — JSON Schema for validation.
 
+## Registry
 
-# NIfTI Phantom registry
+A shared index of public phantoms anyone can contribute to via a PR; the data is
+hosted on providers like [Zenodo](https://zenodo.org/).
 
-We strive to make phantom data exchangable between groups.
-This is only partly achieved by a universal specification - a shared place to store and share phantoms helps as well.
-This is why this repository also contains a phantom registry - a list of public NIfTI phantoms usable by anyone.
-The phantom data itself is stored by providers like [Zenondo](https://zenodo.org/).
-The registry is stored here, in the form of a [list of available phantoms](registry.json).
+- [REGISTRY.md](REGISTRY.md) — how it works and how to contribute.
+- [registry.json](registry.json) — the list of phantoms.
+- [nifti-registry.schema.json](nifti-registry.schema.json) — JSON Schema for registry entries.
 
-Anyone is welcome to add their own phantoms to share by uploading to a provider of their own choosing and adding it to the available list via an PR.
+## Reference implementation
+
+- [demo/](demo/DEMO.md) — a small Python example that loads a phantom into NumPy
+  arrays and plots every tissue; a starting point for porting the format.
+
+## License
+
+See [LICENSE](LICENSE).
