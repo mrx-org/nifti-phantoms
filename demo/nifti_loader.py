@@ -1,32 +1,7 @@
-"""Reference loader for NIfTI phantoms.
-
-This module turns a phantom (parsed by :mod:`nifti_phantom`) into plain NumPy
-arrays. It is meant as a readable, dependency-light **example** of how to load
-the format into your own library - not as an optimised or feature-complete
-implementation.
-
-The third-party dependencies are ``numpy`` and ``nibabel`` (plus ``scipy``,
-which nibabel uses for the optional ``reslice_to`` resampling); everything else
-is the Python standard library. There is intentionally no code for saving,
-combining or simulating phantoms.
-
-Layout (mirrors the spec):
-
-* :func:`load_phantom` - load a whole ``phantom.json`` into ``{name: LoadedTissue}``.
-* :func:`load_tissue` - load a single tissue.
-* :func:`load_property` - resolve one scalar-or-map property to a 3D array.
-* :func:`eval_expr` - apply a ``func`` transform.
-
-See ``../JSON.md`` and ``../NIFTI.md`` for the format these functions implement.
-
-Example
--------
->>> tissues = load_phantom("example/subj42-3T.json")
->>> gm = tissues["gm"]
->>> gm.density.shape          # 3D array on the (possibly resliced) grid
->>> gm.T1                     # 3D array, seconds (here a uniform value)
->>> gm.B1_tx.shape            # (channels, X, Y, Z)
-"""
+# Reference loader for NIfTI phantoms: turns a phantom (parsed by nifti_phantom)
+# into plain NumPy arrays. A readable example for porting to your own library -
+# not optimised or feature-complete. Deps: numpy, nibabel (and scipy, used by
+# nibabel for reslicing). See ../SPEC.md for the format and DEMO.md for usage.
 
 from __future__ import annotations
 
@@ -286,7 +261,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) != 2:
-        print("usage: python loader.py <path/to/phantom.json>")
+        print("usage: python nifti_loader.py <path/to/phantom.json>")
         raise SystemExit(2)
 
     tissues = load_phantom(sys.argv[1])

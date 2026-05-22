@@ -1,1 +1,4 @@
 __pycache__
+
+# demo.py plot output (the example NIfTIs in demo/data are committed)
+demo/figures/
