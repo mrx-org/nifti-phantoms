@@ -59,8 +59,7 @@ class PhantomSystem:
 
     @classmethod
     def from_dict(cls, config: dict[str, float]):
-        # `gyro` is optional and defaults to water; `B0` is required.
-        return cls(gyro=config.get("gyro", 42.5764), B0=config["B0"])
+        return cls(gyro=config["gyro"], B0=config["B0"])
 
     def to_dict(self) -> dict[str, float]:
         return {"gyro": self.gyro, "B0": self.B0}
@@ -157,7 +156,7 @@ class NiftiTissue:
             ("ADC", self.ADC, 0.0),
             ("dB0", self.dB0, 0.0),
         ):
-            if not isinstance(prop, (float, int)) and prop == default:
+            if not is_default(prop, default):
                 config[key] = serialize_prop(prop)
 
         for key, channels in (("B1+", self.B1_tx), ("B1-", self.B1_rx)):

@@ -62,10 +62,10 @@ self-documenting. More units might be added in future revisions.
 
 Global scalars for the (virtual) MR system.
 
-| Field  | Required | Type   | Default   | Meaning                                            |
-|--------|----------|--------|-----------|----------------------------------------------------|
-| `B0`   | yes      | number | —         | Main field strength the data was captured for [T]. |
-| `gyro` | no       | number | `42.5764` | Gyromagnetic ratio [MHz/T] (water by default).     |
+| Field  | Required | Type   | Meaning                                            |
+|--------|----------|--------|----------------------------------------------------|
+| `B0`   | yes      | number | Main field strength the data was captured for [T]. |
+| `gyro` | yes      | number | Gyromagnetic ratio [MHz/T] (`42.5764` for water).  |
 
 ### `reslice_to` (optional)
 

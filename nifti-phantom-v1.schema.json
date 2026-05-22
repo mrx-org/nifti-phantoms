@@ -30,7 +30,7 @@
       "description": "Global scalar parameters of the (virtual) MR system, shared by all tissues.",
       "type": "object",
       "additionalProperties": false,
-      "required": [ "B0" ],
+      "required": [ "gyro", "B0" ],
       "properties": {
         "gyro": {
           "description": "Gyromagnetic ratio of the simulation data in MHz / T - use 42.5764 for water",
