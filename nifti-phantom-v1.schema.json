@@ -4,12 +4,7 @@
   "title": "NIfTI Phantom v1",
   "description": "Numerical MRI simulation phantom. Can contain segmented multi-tissue data as well as per-voxel data. References NIfTI files stored next to this file.",
   "type": "object",
-  "required": [
-    "$schema",
-    "units",
-    "system",
-    "tissues"
-  ],
+  "required": [ "$schema", "units", "system", "tissues" ],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -35,9 +30,7 @@
       "description": "Global scalar parameters of the (virtual) MR system, shared by all tissues.",
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "B0"
-      ],
+      "required": [ "B0" ],
       "properties": {
         "gyro": {
           "description": "Gyromagnetic ratio of the simulation data in MHz / T - use 42.5764 for water",
@@ -54,10 +47,7 @@
       "description": "Optional target sampling grid. If omitted, NIfTIs are loaded as-is. If given, all NIfTIs are resampled onto the grid defined by `affine` and `resolution` (interpreted exactly as in the NIfTI standard). This only changes how the data is sampled, not the orientation of the phantom.",
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "affine",
-        "resolution"
-      ],
+      "required": [ "affine", "resolution" ],
       "properties": {
         "affine": {
           "description": "Voxel-to-world affine: the upper 3 rows of the 4x4 NIfTI affine (the implicit 4th row is [0, 0, 0, 1]), as 3 rows of 4 numbers each.",
@@ -98,9 +88,7 @@
     "tissue": {
       "description": "A single tissue, defined by its spatial distribution (NIfTI) and its physical properties. Only the properties listed here are allowed; any omitted property takes its documented default.",
       "type": "object",
-      "required": [
-        "density"
-      ],
+      "required": [ "density" ],
       "additionalProperties": false,
       "properties": {
         "density": {
@@ -179,10 +167,7 @@
     "transformedReference": {
       "description": "A NIfTI reference whose voxel values are remapped by an expression of `x` (the voxel value), e.g. {\"file\": \"subj42_dB0.nii.gz[0]\", \"func\": \"x - 420\"}.",
       "type": "object",
-      "required": [
-        "file",
-        "func"
-      ],
+      "required": [ "file", "func" ],
       "additionalProperties": false,
       "properties": {
         "file": {

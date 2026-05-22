@@ -109,8 +109,8 @@ Only the properties below are allowed; any omitted property takes its default.
 
 A single property value is one of:
 
-1. **a number** — spatially uniform across the whole phantom, or
-2. **a NIfTI reference** — a spatially varying map, or
+1. **a number** — spatially uniform across the whole phantom like `"T1": 1.5`
+2. **a NIfTI reference** — a spatially varying map
 3. **a transformed reference** — a NIfTI map with a per-voxel expression applied.
 
 ### NIfTI reference
@@ -119,9 +119,11 @@ A string naming a NIfTI file (stored next to the JSON) with a **mandatory**
 sub-volume index — the zero-based position along the file's 4th dimension — in
 square brackets:
 
-```
-subj42.nii.gz[0]
-subj42_dB0.nii[3]
+```json
+{
+  "density": "subj42.nii.gz[0]",
+  "dB0": "subj42_dB0.nii[3]"
+}
 ```
 
 ### Transformed reference
@@ -129,7 +131,7 @@ subj42_dB0.nii[3]
 A NIfTI reference whose voxel values are remapped:
 
 ```json
-{ "file": "subj42_dB0.nii.gz[0]", "func": "x - 420" }
+"dB0": { "file": "subj42_dB0.nii.gz[0]", "func": "x - 420" }
 ```
 
 `func` is an expression evaluated per voxel. Allowed tokens:
