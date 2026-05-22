@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/mrx-org/nifti-phantoms/refs/heads/main/nifti-phantom-v1.schema.json",
+  "$id": "https://github.com/mrx-org/nifti-phantoms/nifti-phantom-v1",
   "title": "NIfTI Phantom v1",
   "description": "Numerical MRI simulation phantom. Can contain segmented multi-tissue data as well as per-voxel data. References NIfTI files stored next to this file.",
   "type": "object",
@@ -13,13 +13,12 @@
   "additionalProperties": false,
   "properties": {
     "$schema": {
-      "description": "Format discriminator and version.",
-      "const": "https://raw.githubusercontent.com/mrx-org/nifti-phantoms/refs/heads/main/nifti-phantom-v1.schema.json"
+      "description": "Format discriminator and version. Any URI whose path ends in 'nifti-phantom-v1', optionally followed by a file extension (e.g. '.json', '.schema.json'), so files can point at the schema via any host, branch or tag.",
+      "type": "string",
+      "pattern": "nifti-phantom-v1(\\.[^/]*)?$"
     },
     "units": {
       "description": "Units used by tissue properties. To simplify parsers, the exact units are fixed - the purpose of this field is documentation.",
-      "type": "object",
-      "additionalProperties": false,
       "const": {
         "gyro": "MHz/T",
         "B0": "T",
@@ -135,7 +134,9 @@
         },
         "B1+": {
           "description": "B1 transmit field [rel], one entry per transmit channel. Defaults to [1] when omitted.",
-          "default": [1],
+          "default": [
+            1
+          ],
           "type": "array",
           "minItems": 1,
           "items": {
@@ -144,7 +145,9 @@
         },
         "B1-": {
           "description": "B1 receive field [rel], one entry per receive channel. Defaults to [1] when omitted.",
-          "default": [1],
+          "default": [
+            1
+          ],
           "type": "array",
           "minItems": 1,
           "items": {
@@ -186,9 +189,15 @@
           "$ref": "#/$defs/niftiReference"
         },
         "func": {
-          "description": "Expression in the variable `x` evaluated per voxel.",
+          "description": "Per-voxel remap expression of the voxel value `x`. Allowed tokens: numbers (integer, decimal, leading-dot, or scientific notation, e.g. 420, 1.5, .5, 1e-3), the operators + - * /, parentheses, and the variables x, x_min, x_max, x_std, x_mean (per-volume statistics of x).",
           "type": "string",
-          "minLength": 1
+          "pattern": "^(\\s*([-+*/()]|x_min|x_max|x_std|x_mean|x|(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?))+\\s*$",
+          "examples": [
+            "x - 420",
+            "x / x_max",
+            "(x - x_mean) / x_std",
+            "x * 1e-3"
+          ]
         }
       }
     }
