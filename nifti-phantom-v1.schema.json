@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mrx-org/nifti-phantoms/nifti-phantom-v1.schema.json",
+  "title": "NIfTI Phantom v1",
+  "description": "Numerical MRI simulation phantom. Can contain segmented multi-tissue data as well as per-voxel data. References NIfTI files stored next to this file.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "units",
+    "system",
+    "tissues"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "Format discriminator and version.",
+      "const": "https://github.com/mrx-org/nifti-phantoms/nifti-phantom-v1.schema.json"
+    },
+    "units": {
+      "description": "Units used by tissue properties. To simplify parsers, the exact units are fixed - the purpose of this field is documentation.",
+      "type": "object",
+      "additionalProperties": false,
+      "const": {
+        "gyro": "MHz/T",
+        "B0": "T",
+        "T1": "s",
+        "T2": "s",
+        "T2'": "s",
+        "ADC": "10^-3 mm^2/s",
+        "dB0": "Hz",
+        "B1+": "rel",
+        "B1-": "rel"
+      }
+    },
+    "system": {
+      "description": "Global scalar parameters of the (virtual) MR system, shared by all tissues.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "B0"
+      ],
+      "properties": {
+        "gyro": {
+          "description": "Gyromagnetic ratio of the simulation data in MHz / T - use 42.5764 for water",
+          "type": "number",
+          "default": 42.5764
+        },
+        "B0": {
+          "description": "Main magnetic field strength in T this simulation data was captured for.",
+          "type": "number"
+        }
+      }
+    },
+    "reslice_to": {
+      "description": "Optional target sampling grid. If omitted, NIfTIs are loaded as-is. If given, all NIfTIs are resampled onto the grid defined by `affine` and `resolution` (interpreted exactly as in the NIfTI standard). This only changes how the data is sampled, not the orientation of the phantom.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "affine",
+        "resolution"
+      ],
+      "properties": {
+        "affine": {
+          "description": "Voxel-to-world affine: the upper 3 rows of the 4x4 NIfTI affine (the implicit 4th row is [0, 0, 0, 1]), as 3 rows of 4 numbers each.",
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "resolution": {
+          "description": "Target matrix size (voxel counts) along the 3 spatial axes.",
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "tissues": {
+      "description": "List of tissues for this phantom. Keys can be used for identification (e.g.: 'gm', 'wm', 'csf') but are otherwise arbitrary.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/tissue"
+      }
+    }
+  },
+  "$defs": {
+    "tissue": {
+      "description": "A single tissue, defined by its spatial distribution (NIfTI) and its physical properties. Only the properties listed here are allowed; any omitted property takes its documented default.",
+      "type": "object",
+      "required": [
+        "density"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "density": {
+          "description": "Spatial distribution / volume fraction of this tissue. Must be spatially resolved (a NIfTI reference).",
+          "$ref": "#/$defs/niftiReference"
+        },
+        "T1": {
+          "description": "Longitudinal relaxation time [s]. Defaults to infinity (no relaxation) when omitted.",
+          "default": 1e9,
+          "$ref": "#/$defs/scalarOrMap"
+        },
+        "T2": {
+          "description": "Transversal relaxation time [s]. Defaults to infinity (no relaxation) when omitted.",
+          "default": 1e9,
+          "$ref": "#/$defs/scalarOrMap"
+        },
+        "T2'": {
+          "description": "Reversible transversal relaxation time [s]. Defaults to infinity (no relaxation) when omitted.",
+          "default": 1e9,
+          "$ref": "#/$defs/scalarOrMap"
+        },
+        "ADC": {
+          "description": "Apparent diffusion coefficient [10^-3 mm^2/s]. Defaults to 0 when omitted.",
+          "default": 0,
+          "$ref": "#/$defs/scalarOrMap"
+        },
+        "dB0": {
+          "description": "Off-resonance / B0 deviation [Hz]. Defaults to 0 when omitted.",
+          "default": 0,
+          "$ref": "#/$defs/scalarOrMap"
+        },
+        "B1+": {
+          "description": "B1 transmit field [rel], one entry per transmit channel. Defaults to [1] when omitted.",
+          "default": [1],
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/scalarOrMap"
+          }
+        },
+        "B1-": {
+          "description": "B1 receive field [rel], one entry per receive channel. Defaults to [1] when omitted.",
+          "default": [1],
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/scalarOrMap"
+          }
+        }
+      }
+    },
+    "scalarOrMap": {
+      "description": "A single property value: either a spatially-uniform number, or a spatial map backed by a NIfTI sub-volume (optionally transformed).",
+      "oneOf": [
+        {
+          "description": "A spatially-uniform value.",
+          "type": "number"
+        },
+        {
+          "$ref": "#/$defs/niftiReference"
+        },
+        {
+          "$ref": "#/$defs/transformedReference"
+        }
+      ]
+    },
+    "niftiReference": {
+      "description": "Reference to a single sub-volume of a NIfTI file, selected by zero-based index (4th-dimension of file) in square brackets, e.g. \"subj42.nii.gz[0]\".",
+      "type": "string",
+      "pattern": "^.+\\.nii(\\.gz)?\\[\\d+\\]$"
+    },
+    "transformedReference": {
+      "description": "A NIfTI reference whose voxel values are remapped by an expression of `x` (the voxel value), e.g. {\"file\": \"subj42_dB0.nii.gz[0]\", \"func\": \"x - 420\"}.",
+      "type": "object",
+      "required": [
+        "file",
+        "func"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/niftiReference"
+        },
+        "func": {
+          "description": "Expression in the variable `x` evaluated per voxel.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
