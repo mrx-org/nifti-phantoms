@@ -5,8 +5,8 @@ phantoms. It only **references** data — the phantoms themselves are hosted on
 [Zenodo](https://zenodo.org/). Anyone can publish a phantom and add
 it via a pull request. Entries are validated against
 [`nifti-registry.schema.json`](nifti-registry.schema.json) (JSON Schema
-draft 2020-12). The format carries no version tag and allows extra properties, so
-it can be migrated in place if it ever needs to change.
+draft 2020-12). The format carries no version tag and entries allow extra
+properties, so it can be migrated in place if it ever needs to change.
 
 ## Hosting model
 
@@ -35,61 +35,58 @@ version. Zenodo's **"New version"** flow carries unchanged files forward without
 re-uploading them, so revising the JSON does not re-upload the NIfTI.
 
 A record may bundle a **set** of related phantoms (e.g. one subject across field
-strengths, or a whole cohort). Record granularity is independent of registry
-granularity: the registry still lists each phantom individually, and several
-entries may share the same `doi`.
+strengths, or a whole cohort). One registry entry — a **collection** — maps to
+exactly one record and lists every phantom JSON in it. A record's phantoms are
+therefore never split across entries, and no two entries share a `doi`.
 
 ### Reproducibility
 
 Because entries are mutable, the immutable unit is the **registry itself**, which
-is versioned by git. To pin a phantom in your code, reference its `id` together
-with the **nifti-phantoms commit hash** of the registry you resolved it against —
-that commit fixes the exact `doi`, and therefore the exact files, forever.
+is versioned by git. To pin a phantom in your code, reference it as
+`<collection>/<file>` together with the **nifti-phantoms commit hash** of the
+registry you resolved against — e.g. `a1b2c3d mrx-brain-cohort/subj42-3T.json`.
+That commit fixes the collection's `doi`, and therefore the exact files, forever.
 Resolve against the registry's `main` HEAD for the newest data; pin to a commit
-for a reproducible resolution. There is no need to record the DOI in your code:
-the `id` + commit is enough.
+for a reproducible resolution.
 
 ## Entry format
 
-`registry.json` is an object with a `phantoms` array. Each entry:
+`registry.json` is a top-level array of **collections**. Each entry:
 
 | Field | Req. | Description |
 |-------|------|-------------|
-| `id` | yes | Unique key, conventionally the phantom name (`subj42`). |
-| `description` | yes | One or two sentences. |
+| `collection` | yes | Unique collection name; namespaces its files in references (`mrx-brain-cohort`). |
+| `description` | yes | One or two sentences describing the collection. |
 | `authors` | yes | List of `{ name, orcid?, email?, affiliation? }`. |
 | `license` | yes | SPDX id, e.g. `CC-BY-4.0`, `CC0-1.0`. |
-| `doi` | yes | Immutable Zenodo **version DOI** (`10.5281/zenodo.<id>`) the entry points to. Updated in place (new PR) when the data is revised. |
-| `variants` | yes | The JSON configs in the record (≥ 1). |
+| `doi` | yes | Immutable Zenodo **version DOI** (`10.5281/zenodo.<id>`) the collection points to. Updated in place (new PR) when the data is revised. |
+| `phantoms` | yes | The phantom JSON filenames in the record (≥ 1). |
 | `keywords` | no | Discovery tags (`brain`, `synthetic`, `3d`, …). |
-| `collection` | no | Label grouping phantoms that share a record. |
 
-`variants[]` — one per phantom JSON in the record:
+`phantoms[]` is a flat list of JSON filenames inside the record (e.g.
+`subj42-3T.json`). Each is referenced as `<collection>/<filename>` and pulls in
+the NIfTI files it needs from the same record. Names should be self-describing
+(field strength, options) since there is no per-phantom description.
 
-| Field | Req. | Description |
-|-------|------|-------------|
-| `name` | yes | Variant name (`subj42-3T`). |
-| `file` | yes | JSON filename inside the record. |
-| `B0` | no | Main field strength [T], for discovery. |
-
-Resolving a phantom: read the Zenodo record id from `doi` (the digits in
-`…/zenodo.<id>`), then fetch files from the record over the Zenodo API — download
-`variants[].file` and the NIfTI files it references (all live in the same
-record). To follow the latest data, resolve the entry from the registry's `main`
-HEAD; to reproduce an exact resolution, resolve it at a pinned commit.
+Resolving a phantom: read the Zenodo record id from the collection's `doi` (the
+digits in `…/zenodo.<id>`), then fetch files from the record over the Zenodo API —
+download the chosen `phantoms[]` JSON and the NIfTI files it references (all live
+in the same record). To follow the latest data, resolve from the registry's
+`main` HEAD; to reproduce an exact resolution, resolve at a pinned commit.
 
 Deliberately minimal: tissue lists, resolution and channel counts are discovered
 by opening the phantom JSON, not duplicated here.
 
-## Contributing a phantom
+## Contributing a collection
 
 1. Assemble the phantom set (NIfTI + JSON) following the layout in
    [SPEC.md](SPEC.md).
 2. Upload **all files** to a single Zenodo record and publish it. To revise the
    JSON later, use Zenodo **"New version"** and keep the existing NIfTI files.
-3. Open a PR adding one entry per phantom to [`registry.json`](registry.json),
-   setting `doi` to the published version DOI. To revise a phantom later,
-   publish a new Zenodo version and open a PR that updates its `doi`.
+3. Open a PR adding one collection entry to [`registry.json`](registry.json):
+   list every phantom JSON in the record under `phantoms` and set `doi` to the
+   published version DOI. To revise later, publish a new Zenodo version and open
+   a PR that updates the collection's `doi`.
 
 A GitHub Action validates `registry.json` against the schema on every PR. Run the
 same check locally before opening one:
