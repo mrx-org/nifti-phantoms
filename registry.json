@@ -12,7 +12,6 @@
       "collection": "mrx-brain-cohort",
       "source": {
         "provider": "zenodo",
-        "concept_doi": "10.5281/zenodo.1234567",
         "doi": "10.5281/zenodo.1234568",
         "url": "https://doi.org/10.5281/zenodo.1234568"
       },
@@ -33,7 +32,6 @@
       "collection": "mrx-brain-cohort",
       "source": {
         "provider": "zenodo",
-        "concept_doi": "10.5281/zenodo.2222220",
         "doi": "10.5281/zenodo.2222221",
         "url": "https://doi.org/10.5281/zenodo.2222221"
       },

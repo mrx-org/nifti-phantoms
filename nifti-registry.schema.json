@@ -86,20 +86,15 @@
     },
     "source": {
       "type": "object",
-      "required": [ "provider", "concept_doi", "doi" ],
+      "required": [ "provider", "doi" ],
       "properties": {
         "provider": {
           "description": "Hosting provider. Only 'zenodo' is defined for now.",
           "type": "string",
           "enum": [ "zenodo" ]
         },
-        "concept_doi": {
-          "description": "Concept DOI of the record; always resolves to its latest version.",
-          "type": "string",
-          "pattern": "^10\\.\\d{4,9}/.+$"
-        },
         "doi": {
-          "description": "Version DOI: the exact, immutable record version this entry is pinned to (reproducibility).",
+          "description": "Immutable version DOI of the exact, byte-identical record version this entry currently points to. The entry is mutable: it is updated in place to a new version DOI when the data is revised. To pin an exact resolution, reference the phantom id at a specific nifti-phantoms commit, not a concept DOI.",
           "type": "string",
           "pattern": "^10\\.\\d{4,9}/.+$"
         },
