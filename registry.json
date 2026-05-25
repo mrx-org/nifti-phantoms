@@ -1,24 +1,13 @@
 [
   {
-    "collection": "mrx-brain-cohort",
-    "description": "Single-slice brain-like phantom (GM/WM/fat) with a dB0 map and an 8-channel B1+, provided at 3T and 7T.",
-    "keywords": [ "brain", "in-vivo-derived", "2d" ],
+    "collection": "nifti-phantom-demo",
+    "description": "Demonstration data for the NIfTI phantom format: a synthetic brain-like phantom (single slice) plus geometric-shape phantoms on their native grid and resliced.",
+    "keywords": [ "demo", "synthetic", "numerical", "brain", "2d", "3d" ],
     "authors": [
-      { "name": "Doe, Jane", "orcid": "0000-0002-1825-0097", "email": "jane.doe@example.edu", "affiliation": "Example University" }
+      { "name": "Endres, Jonathan", "orcid": "0009-0005-0908-4153", "email": "jonathan.endres@uk-erlangen.de", "affiliation": "Friedrich-Alexander-Universität Erlangen-Nürnberg" }
     ],
     "license": "CC-BY-4.0",
-    "doi": "10.5281/zenodo.1234568",
-    "phantoms": [ "subj42-3T.json", "subj42-7T.json" ]
-  },
-  {
-    "collection": "shapes",
-    "description": "Synthetic 3D phantom (disk/ring/background) loaded on its native grid.",
-    "keywords": [ "synthetic", "numerical", "3d" ],
-    "authors": [
-      { "name": "Doe, Jane" }
-    ],
-    "license": "CC0-1.0",
-    "doi": "10.5281/zenodo.2222221",
-    "phantoms": [ "shapes.json" ]
+    "doi": "10.5281/zenodo.20384437",
+    "phantoms": [ "subj42-3T.json", "shapes.json", "shapes_resliced.json" ]
   }
 ]
